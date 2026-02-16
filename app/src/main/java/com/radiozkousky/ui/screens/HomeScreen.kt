@@ -8,6 +8,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,7 +20,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.radiozkousky.data.Category
@@ -34,19 +35,27 @@ fun HomeScreen(
     onNavigateToQuiz: (Category?) -> Unit,
     onNavigateToTest: () -> Unit,
     onNavigateToSpaced: (Category?) -> Unit,
-    onNavigateToStats: () -> Unit
+    onNavigateToStats: () -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     var showCategoryDialog by remember { mutableStateOf(false) }
     var pendingMode by remember { mutableStateOf("") }
+    val examType by viewModel.selectedExamType.collectAsState()
+    val totalQuestions = QuestionBank.getAllQuestions(examType).size
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        "Radio Zkoušky VFL",
+                        "Radio Zkoušky ${examType.title}",
                         fontWeight = FontWeight.Bold
                     )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Zpět")
+                    }
                 },
                 actions = {
                     IconButton(onClick = onNavigateToStats) {
@@ -56,6 +65,7 @@ fun HomeScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
                     actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
@@ -77,7 +87,7 @@ fun HomeScreen(
             )
 
             Text(
-                text = "${QuestionBank.allQuestions.size} otázek ve 3 kategoriích • splnění na 90 %",
+                text = "$totalQuestions otázek ve 3 kategoriích • splnění na 90 %",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -141,6 +151,7 @@ fun HomeScreen(
 
     if (showCategoryDialog) {
         CategorySelectionDialog(
+            examType = examType,
             onDismiss = { showCategoryDialog = false },
             onCategorySelected = { category ->
                 showCategoryDialog = false
@@ -200,7 +211,7 @@ fun ModeCard(
                     )
                 }
                 Icon(
-                    imageVector = Icons.Default.ChevronRight,
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = null,
                     tint = Color.White.copy(alpha = 0.7f),
                     modifier = Modifier.size(24.dp)
@@ -212,6 +223,7 @@ fun ModeCard(
 
 @Composable
 fun CategorySelectionDialog(
+    examType: com.radiozkousky.data.ExamType,
     onDismiss: () -> Unit,
     onCategorySelected: (Category?) -> Unit
 ) {
@@ -227,25 +239,25 @@ fun CategorySelectionDialog(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 CategoryDialogItem(
                     title = "Všechny kategorie",
-                    count = QuestionBank.allQuestions.size,
+                    count = QuestionBank.getAllQuestions(examType).size,
                     color = MaterialTheme.colorScheme.primary,
                     onClick = { onCategorySelected(null) }
                 )
                 CategoryDialogItem(
                     title = Category.PREDPISY.shortTitle,
-                    count = QuestionBank.getByCategory(Category.PREDPISY).size,
+                    count = QuestionBank.getByCategory(examType, Category.PREDPISY).size,
                     color = CategoryPredpisyColor,
                     onClick = { onCategorySelected(Category.PREDPISY) }
                 )
                 CategoryDialogItem(
                     title = Category.PROVOZ.shortTitle,
-                    count = QuestionBank.getByCategory(Category.PROVOZ).size,
+                    count = QuestionBank.getByCategory(examType, Category.PROVOZ).size,
                     color = CategoryProvozColor,
                     onClick = { onCategorySelected(Category.PROVOZ) }
                 )
                 CategoryDialogItem(
                     title = Category.ELEKTRO.shortTitle,
-                    count = QuestionBank.getByCategory(Category.ELEKTRO).size,
+                    count = QuestionBank.getByCategory(examType, Category.ELEKTRO).size,
                     color = CategoryElektroColor,
                     onClick = { onCategorySelected(Category.ELEKTRO) }
                 )

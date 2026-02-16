@@ -3,6 +3,7 @@ package com.radiozkousky.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import com.radiozkousky.data.Category
+import com.radiozkousky.data.ExamType
 import com.radiozkousky.data.ProgressStore
 import com.radiozkousky.data.Question
 import com.radiozkousky.data.QuestionBank
@@ -62,7 +63,7 @@ data class TestState(
 }
 
 data class StatsState(
-    val totalQuestions: Int = 164,
+    val totalQuestions: Int = 0,
     val totalAnswered: Int = 0,
     val totalCorrect: Int = 0,
     val totalIncorrect: Int = 0,
@@ -73,6 +74,9 @@ data class StatsState(
 class LearningViewModel(application: Application) : AndroidViewModel(application) {
 
     val progressStore = ProgressStore(application)
+
+    private val _selectedExamType = MutableStateFlow(ExamType.VFL)
+    val selectedExamType: StateFlow<ExamType> = _selectedExamType.asStateFlow()
 
     private val _flashcardState = MutableStateFlow(FlashcardState())
     val flashcardState: StateFlow<FlashcardState> = _flashcardState.asStateFlow()
@@ -86,10 +90,16 @@ class LearningViewModel(application: Application) : AndroidViewModel(application
     private val _statsState = MutableStateFlow(StatsState())
     val statsState: StateFlow<StatsState> = _statsState.asStateFlow()
 
+    fun selectExamType(examType: ExamType) {
+        _selectedExamType.value = examType
+        progressStore.switchExamType(examType)
+    }
+
     // ==================== FLASHCARDS ====================
 
     fun startFlashcards(category: Category?) {
-        val questions = QuestionBank.getShuffled(category)
+        val examType = _selectedExamType.value
+        val questions = QuestionBank.getShuffled(examType, category)
         _flashcardState.value = FlashcardState(questions = questions)
     }
 
@@ -129,7 +139,8 @@ class LearningViewModel(application: Application) : AndroidViewModel(application
     // ==================== QUIZ ====================
 
     fun startQuiz(category: Category?) {
-        val questions = QuestionBank.getShuffled(category)
+        val examType = _selectedExamType.value
+        val questions = QuestionBank.getShuffled(examType, category)
         _quizState.value = QuizState(questions = questions)
         generateQuizOptions()
     }
@@ -137,7 +148,8 @@ class LearningViewModel(application: Application) : AndroidViewModel(application
     private fun generateQuizOptions() {
         val state = _quizState.value
         val question = state.currentQuestion ?: return
-        val sameCategory = QuestionBank.getByCategory(question.category)
+        val examType = _selectedExamType.value
+        val sameCategory = QuestionBank.getByCategory(examType, question.category)
             .filter { it.id != question.id }
             .shuffled()
 
@@ -188,9 +200,10 @@ class LearningViewModel(application: Application) : AndroidViewModel(application
     // ==================== TEST ====================
 
     fun startTest() {
-        val predpisy = QuestionBank.getByCategory(Category.PREDPISY).shuffled()
-        val provoz = QuestionBank.getByCategory(Category.PROVOZ).shuffled()
-        val elektro = QuestionBank.getByCategory(Category.ELEKTRO).shuffled()
+        val examType = _selectedExamType.value
+        val predpisy = QuestionBank.getByCategory(examType, Category.PREDPISY).shuffled()
+        val provoz = QuestionBank.getByCategory(examType, Category.PROVOZ).shuffled()
+        val elektro = QuestionBank.getByCategory(examType, Category.ELEKTRO).shuffled()
 
         val questions = predpisy + provoz + elektro
 
@@ -205,7 +218,8 @@ class LearningViewModel(application: Application) : AndroidViewModel(application
     private fun generateTestOptions() {
         val state = _testState.value
         val question = state.currentQuestion ?: return
-        val sameCategory = QuestionBank.getByCategory(question.category)
+        val examType = _selectedExamType.value
+        val sameCategory = QuestionBank.getByCategory(examType, question.category)
             .filter { it.id != question.id }
             .shuffled()
 
@@ -288,14 +302,15 @@ class LearningViewModel(application: Application) : AndroidViewModel(application
     // ==================== STATS ====================
 
     fun refreshStats() {
+        val examType = _selectedExamType.value
         val categoryStats = Category.entries.associateWith { category ->
-            val total = QuestionBank.getByCategory(category).size
+            val total = QuestionBank.getByCategory(examType, category).size
             val mastered = progressStore.getMasteredCountByCategory(category)
             Pair(mastered, total)
         }
 
         _statsState.value = StatsState(
-            totalQuestions = QuestionBank.allQuestions.size,
+            totalQuestions = QuestionBank.getAllQuestions(examType).size,
             totalAnswered = progressStore.getTotalAnswered(),
             totalCorrect = progressStore.getTotalCorrect(),
             totalIncorrect = progressStore.getTotalIncorrect(),

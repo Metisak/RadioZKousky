@@ -1,6 +1,24 @@
-﻿package com.radiozkousky.data
+package com.radiozkousky.data
 
 object QuestionBank {
+
+    fun getAllQuestions(examType: ExamType): List<Question> = when (examType) {
+        ExamType.VFL -> QuestionBankVFL.allQuestions
+        ExamType.OFL -> QuestionBankOFL.allQuestions
+    }
+
+    fun getByCategory(examType: ExamType, category: Category): List<Question> = when (examType) {
+        ExamType.VFL -> QuestionBankVFL.getByCategory(category)
+        ExamType.OFL -> QuestionBankOFL.getByCategory(category)
+    }
+
+    fun getShuffled(examType: ExamType, category: Category? = null): List<Question> = when (examType) {
+        ExamType.VFL -> QuestionBankVFL.getShuffled(category)
+        ExamType.OFL -> QuestionBankOFL.getShuffled(category)
+    }
+}
+
+object QuestionBankVFL {
 
     val allQuestions: List<Question> = buildList {
         // ============================================================
@@ -516,3 +534,4 @@ object QuestionBank {
         return questions.shuffled()
     }
 }
+

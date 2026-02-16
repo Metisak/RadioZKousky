@@ -16,13 +16,28 @@ data class QuestionProgress(
     var repetition: Int = 0
 )
 
-class ProgressStore(context: Context) {
+class ProgressStore(private val context: Context) {
 
-    private val prefs: SharedPreferences =
-        context.getSharedPreferences("radio_zkousky_progress", Context.MODE_PRIVATE)
     private val gson = Gson()
 
-    private var progressMap: MutableMap<Int, QuestionProgress> = loadAll()
+    private var currentExamType: ExamType = ExamType.VFL
+    private lateinit var prefs: SharedPreferences
+    private var progressMap: MutableMap<Int, QuestionProgress> = mutableMapOf()
+
+    init {
+        switchExamType(ExamType.VFL)
+    }
+
+    fun switchExamType(examType: ExamType) {
+        currentExamType = examType
+        prefs = context.getSharedPreferences(
+            "radio_zkousky_progress_${examType.name}",
+            Context.MODE_PRIVATE
+        )
+        progressMap = loadAll()
+    }
+
+    fun getExamType(): ExamType = currentExamType
 
     private fun loadAll(): MutableMap<Int, QuestionProgress> {
         val json = prefs.getString("progress_data", null) ?: return mutableMapOf()
@@ -69,16 +84,16 @@ class ProgressStore(context: Context) {
     fun getMasteredCount(): Int = progressMap.values.count { it.repetition >= 3 }
 
     fun getMasteredCountByCategory(category: Category): Int {
-        val questionIds = QuestionBank.getByCategory(category).map { it.id }.toSet()
+        val questionIds = QuestionBank.getByCategory(currentExamType, category).map { it.id }.toSet()
         return progressMap.values.count { it.questionId in questionIds && it.repetition >= 3 }
     }
 
     fun getQuestionsForReview(category: Category? = null): List<Question> {
         val now = System.currentTimeMillis()
         val questions = if (category != null) {
-            QuestionBank.getByCategory(category)
+            QuestionBank.getByCategory(currentExamType, category)
         } else {
-            QuestionBank.allQuestions
+            QuestionBank.getAllQuestions(currentExamType)
         }
 
         val dueQuestions = questions.filter { q ->

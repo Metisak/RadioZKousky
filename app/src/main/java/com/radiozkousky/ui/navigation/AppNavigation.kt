@@ -7,10 +7,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.radiozkousky.data.Category
+import com.radiozkousky.data.ExamType
 import com.radiozkousky.ui.screens.*
 import com.radiozkousky.viewmodel.LearningViewModel
 
 object Routes {
+    const val EXAM_SELECT = "exam_select"
     const val HOME = "home"
     const val FLASHCARDS = "flashcards"
     const val QUIZ = "quiz"
@@ -26,8 +28,19 @@ fun AppNavigation(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Routes.HOME
+        startDestination = Routes.EXAM_SELECT
     ) {
+        composable(Routes.EXAM_SELECT) {
+            ExamSelectScreen(
+                onExamSelected = { examType ->
+                    viewModel.selectExamType(examType)
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(Routes.EXAM_SELECT) { inclusive = false }
+                    }
+                }
+            )
+        }
+
         composable(Routes.HOME) {
             HomeScreen(
                 viewModel = viewModel,
@@ -52,6 +65,9 @@ fun AppNavigation(
                 },
                 onNavigateToStats = {
                     navController.navigate(Routes.STATS)
+                },
+                onNavigateBack = {
+                    navController.popBackStack(Routes.EXAM_SELECT, inclusive = false)
                 }
             )
         }
