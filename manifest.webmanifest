@@ -1,0 +1,1 @@
+{"name":"Radio Zkoušky","short_name":"RadioZK","description":"Příprava na radiofonní zkoušky VFL a OFL","start_url":"/RadioZKousky/","display":"standalone","background_color":"#f8fafb","theme_color":"#1565C0","lang":"en","scope":"/RadioZKousky/","orientation":"portrait","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
