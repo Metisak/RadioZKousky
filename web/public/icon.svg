@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#1565C0"/>
+  <g transform="translate(256,260)" fill="none" stroke="white" stroke-width="28" stroke-linecap="round">
+    <circle r="36" fill="white"/>
+    <path d="M0,-80 A80,80 0 0,1 0,80" opacity=".8"/>
+    <path d="M0,-120 A120,120 0 0,1 0,120" opacity=".6"/>
+    <path d="M0,-160 A160,160 0 0,1 0,160" opacity=".4"/>
+  </g>
+  <text x="256" y="440" text-anchor="middle" font-family="Arial,sans-serif" font-size="72" font-weight="bold" fill="white">RZ</text>
+</svg>
