@@ -1,8 +1,16 @@
-# 📻 Radio Zkoušky VFL
+# 📻 Radio Zkoušky
 
-Aplikace pro přípravu na **radiofonní zkoušky VFL** (radiotelefonista letecké pohyblivé služby). Obsahuje kompletní sadu **164 otázek** ze všech tří zkouškových předmětů podle oficiálního katalogu ČTÚ.
+Aplikace pro přípravu na **radiofonní zkoušky letecké pohyblivé služby**. Podporuje dva typy průkazů:
+
+- **VFL** – Všeobecný průkaz radiotelefonisty (164 otázek, anglické fráze)
+- **OFL** – Omezený průkaz radiotelefonisty (149 otázek, české fráze)
+
+Kompletní sady otázek ze všech tří zkouškových předmětů podle oficiálního katalogu ČTÚ.
 
 ## ✨ Co to umí
+
+### 🎯 Výběr typu zkoušky
+Na úvodní obrazovce si vyber, na jaký typ průkazu se připravuješ. Každý typ má vlastní sadu otázek a oddělený progress.
 
 ### 🃏 Kartičky
 Procházej otázky jednu po druhé, klepnutím odhal odpověď a označ si, jestli ji umíš nebo ne. Jednoduchý a efektivní způsob, jak se s otázkami seznámit.
@@ -21,12 +29,19 @@ Sleduj svůj progress — kolik otázek jsi zodpověděl, kolik jich máš nauč
 
 ## 📚 Zkouškové předměty
 
+### VFL – Všeobecný průkaz (164 otázek)
 | Předmět | Počet otázek |
 |---------|:------------:|
 | 📜 Radiokomunikační předpisy | 35 |
 | 🎙️ Radiokomunikační provoz | 98 |
 | ⚡ Elektrotechnika a radiotechnika | 31 |
-| **Celkem** | **164** |
+
+### OFL – Omezený průkaz (149 otázek)
+| Předmět | Počet otázek |
+|---------|:------------:|
+| 📜 Radiokomunikační předpisy | 35 |
+| 🎙️ Radiokomunikační provoz | 83 |
+| ⚡ Elektrotechnika a radiotechnika | 31 |
 
 ## 📲 Instalace
 
